@@ -1,12 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { matrixResolver } from './matrixResolver';
+import { formatMatrix } from '../../utils';
 import styled from "styled-components";
 
 const MainContainer = styled.div`
-  height: calc(100% - 380px);
+  height: calc(100% - 400px);
+  width: calc(100% - 60px);
   overflow: auto;
-  padding: 20px;
+  padding: 30px;
   align-items: center;
+  display: grid;
+  grid-template-rows: repeat(${
+    props => props.rows ? props.rows : 1
+  }, 42px);
+  grid-template-columns: repeat(${
+    props => props.columns ? props.columns : 1
+  }, 42px);
 `;
 
 const Letter = styled.div`
@@ -26,76 +34,30 @@ const Letter = styled.div`
   }
 `
 
-const MatrixGroup = styled.div`
-  display: flex;
-  flex-direction: column;
-  padding: 5px;
-  width: fit-content;
-`
-
-const Row = styled.div`
-  display: flex;
-  justify-content: center;
-`
-
-const formatMatrix = (matrix, match, setCount, setFormatedMatrix) => {
-  const newFormatedMatrix = [];
-  const resolution = matrixResolver(matrix, match.toUpperCase());
-  setCount(resolution.matchs);
-  for (let y = 0; y < matrix.length; y++) {
-    const newFormatedRow = [];
-    for (let x = 0; x < matrix[y].length; x++) {
-      const currentPosition = JSON.stringify([x, y]);
-      const currentLength = newFormatedRow.length;
-      const letter = matrix[y][x];
-      resolution.positions.forEach((array) => {
-        const position = JSON.stringify(array);
-        if (currentPosition === position) {
-          newFormatedRow.push(Object.assign({}, { value: letter, checked: true }));
-        }
-      });
-      if (currentLength < newFormatedRow.length) {
-        continue;
-      }
-      newFormatedRow.push(Object.assign({}, { value: letter, checked: false }));
-    }
-    newFormatedMatrix.push(newFormatedRow);
-  }
-  setFormatedMatrix(newFormatedMatrix);
-}
-
-export default function Matrix({ count, setCount, matrix, match }) {
+export default function Matrix({ setCount, matrix, match }) {
   const [formatedMatrix, setFormatedMatrix] = useState([]);
 
   useEffect(() => {
-    Array.isArray(matrix) && formatMatrix(matrix, match, setCount, setFormatedMatrix);
+    if(Array.isArray(matrix)) formatMatrix(matrix, match, setCount, setFormatedMatrix);
   }, [match, matrix, setCount, setFormatedMatrix]);
 
-  if (matrix.length) {
-    return (
-      <MainContainer>
-        <MatrixGroup>
-          {
-            formatedMatrix.map((row, index) => (
-              <Row key={index}>
-                {
-                  row.map((letter, index) => {
-                    return (
-                      <Letter className={letter.checked && 'checked'} key={index}>
-                        <strong>{letter.value}</strong>
-                      </Letter>
-                    )
-                  })
-                }
-              </Row>
-            ))}
-        </MatrixGroup>
-      </MainContainer>
-    );
-  } else {
-    return (
-      <MainContainer>
-      </MainContainer>
-    );
-  }
+  console.log({ formatedMatrix });
+  return (formatedMatrix.length > 0) ? ((
+    <MainContainer rows={formatedMatrix.length} columns={formatedMatrix[0]?.length || 0}>
+      {
+        formatedMatrix.map((row, rowIndex) => (
+            row.map((letter, colIndex) => {
+              return (
+                <Letter
+                  key={`letter-${letter.value}-row${rowIndex}-col${colIndex}`}
+                  className={letter.checked && 'checked'}
+                >
+                    <strong>{letter.value}</strong>
+                </Letter>
+              )
+            })
+        ))
+      }
+    </MainContainer>
+  )) : null;
 }
