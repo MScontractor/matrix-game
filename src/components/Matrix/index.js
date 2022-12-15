@@ -3,7 +3,9 @@ import { matrixResolver } from './matrixResolver';
 import styled from "styled-components";
 
 const MainContainer = styled.div`
-  margin: 20px;
+  height: calc(100% - 380px);
+  overflow: auto;
+  padding: 20px;
   align-items: center;
 `;
 
@@ -28,6 +30,7 @@ const MatrixGroup = styled.div`
   display: flex;
   flex-direction: column;
   padding: 5px;
+  width: fit-content;
 `
 
 const Row = styled.div`
@@ -61,8 +64,7 @@ const formatMatrix = (matrix, match, setCount, setFormatedMatrix) => {
   setFormatedMatrix(newFormatedMatrix);
 }
 
-export default function Matrix({ matrix, match }) {
-  const [count, setCount] = useState(0);
+export default function Matrix({ count, setCount, matrix, match }) {
   const [formatedMatrix, setFormatedMatrix] = useState([]);
 
   useEffect(() => {
@@ -72,9 +74,6 @@ export default function Matrix({ matrix, match }) {
   if (matrix.length) {
     return (
       <MainContainer>
-        <h2>
-          <strong>{`${count} ${count.length === 1 ? 'match' : 'matches'}`}</strong>
-        </h2>
         <MatrixGroup>
           {
             formatedMatrix.map((row, index) => (
@@ -96,7 +95,6 @@ export default function Matrix({ matrix, match }) {
   } else {
     return (
       <MainContainer>
-        <p>Empty</p>
       </MainContainer>
     );
   }

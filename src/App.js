@@ -11,13 +11,6 @@ const Main = styled.div`
   height: 100%;
 `;
 
-const MatrixContainer = styled.div`
-  align-items: center;
-  justify-content: center;
-  display: flex;
-  flex-wrap: wrap;
-`;
-
 const Description = styled.div`
   display: flex;
   flex-direction: column;
@@ -29,7 +22,7 @@ const Settings = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 22px;
-  margin: 30px;
+  padding: 30px;
 `;
 
 const InputContainer = styled.div`
@@ -66,6 +59,7 @@ function App() {
   const [matrixString, setMatrixString] = useState(initialString);
   const [matrix, setMatrix] = useState([]);
   const [match, setMatch] = useState('hi');
+  const [count, setCount] = useState(0);
 
   React.useEffect(() => {
     const newMatrix = generateMatrix(matrixString, rows);
@@ -99,7 +93,6 @@ function App() {
             <textarea
               name='matrix'
               onChange={({ target }) => setMatrixString(target.value)}
-              maxlength="300"
               value={matrixString}
             />
           </InputContainer>
@@ -113,13 +106,13 @@ function App() {
               value={rows}
               onChange={({ target }) => setRows(target.value || 1)}
               min="1"
-              max="15"
             />
           </InputContainer>
+          <h2>
+            <strong>{`${count} ${count.length === 1 ? 'match' : 'matches'}`}</strong>
+          </h2>
         </Settings>
-        <MatrixContainer>
-          <Matrix matrix={matrix} match={match} />
-        </MatrixContainer>
+        <Matrix matrix={matrix} match={match} count={count} setCount={setCount} />
       </ResolutionWrapper>
     </Main>
   );
